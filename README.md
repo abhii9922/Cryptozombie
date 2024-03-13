@@ -2,7 +2,7 @@
 
 1. Install the dependencies using `npm install`
 
-2. Install Ganache and update the `truffle-config.js` file with the it's network configuration.
+2. Install Ganache and update the `truffle-config.js` file with the its network configuration.
 
 3. Compile all the contracts using `truffle compile`.
 
