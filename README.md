@@ -16,6 +16,6 @@
     - Chain ID: 1337 (if your network id is different, change it to 1337)
     - Symbol: ETH
 
-7. Copy the private key of any account from Ganache (copy a key from any account) and add a new account in Metamask using the private key.
+7. Copy the private key of any account from Ganache (copy a key from any account) and add a new account (import account) in Metamask using the private key.
 
 8. Run `npm start`
