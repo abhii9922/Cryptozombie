@@ -31,7 +31,7 @@
     function startApp() {
 	
       //ZombieOwnership contratc address
-      var cryptoZombiesAddress = "0xC08d276D3022F1E9E1e99eBAa6410fE4FcbEcB8f";
+      var cryptoZombiesAddress = "0xe0C077cc3c16bc2dcb0D9174d621D2B6C856c1CA";
 
       cryptoZombies = new web3.eth.Contract(cryptoZombiesABI, cryptoZombiesAddress);
 
@@ -88,6 +88,7 @@
           $("#txStatus").text("Successfully created " + name + "!");
 
           getZombiesByOwner(userAccount).then(displayZombies);
+          
         })
         .on("error", function (error) {
 
@@ -172,7 +173,22 @@
 
     //  startApp()
 
-  //  }) 
+  //  })
+    window.addEventListener('load', async () => {
+      // Modern dapp browsers...
+      if (window.ethereum) {
+          window.web3 = new Web3(ethereum);
+          try {
+              // Request account access if needed
+              const accounts = await ethereum.enable();
+              // Acccounts now exposed
+              userAccount = accounts[0];
+              METokencontract = new web3.eth.Contract(METFABI, METokenFAddress);
+          } catch (error) {
+              // User denied account access...
+          }
+      } 
+    })
 
    ethereum.on('accountsChanged', (accounts) => {
        window.location.reload();
