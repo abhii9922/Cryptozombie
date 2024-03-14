@@ -1,24 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
 <head>
   <meta charset="UTF-8">
-  <title>CryptoZombies front-end</title>
-<link rel="icon" href="favicon.ico">
-  <script language="javascript" type="text/javascript"
-    src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.7-rc.0/web3.min.js"></script>
-  <script language="javascript" type="text/javascript" src="cryptozombies_abi.js"></script>
+  <title>CryptoZombies</title>
+  <link rel="icon" href="favicon.ico">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.7-rc.0/web3.min.js"></script>
+  <script src="cryptozombies_abi.js"></script>
+  <link href="./dist/styles.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body>
-  <div id="txStatus"></div>
-  <div id="zombies"></div>
+<body class="bg-gray-900 text-white">
+  <div class="container mx-auto px-4 py-4">
+    <div id="txStatus" class="p-4 mb-4 text-lg"></div>
 
-  <button class="showZombieButton">Show Zombies</button>
-  <button class="createzombieButton">Create Zombie</button>
-  <button class="levelupButton">Level Up</button>
+    <!-- Button Container -->
+    <div class="flex justify-center gap-4 mb-8">
+      <button
+        class="showZombieButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Show
+        Zombies</button>
+      <button
+        class="createzombieButton bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Create
+        Zombie</button>
+      <button
+        class="levelupButton bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Level
+        Up</button>
+    </div>
+
+    <!-- Zombie Cards Container -->
+    <div id="zombies" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Zombie cards will be dynamically inserted here by JavaScript -->
+    </div>
+
+  </div>
+
 
   <script>
 
@@ -31,21 +48,9 @@
     function startApp() {
 	
       //ZombieOwnership contratc address
-      var cryptoZombiesAddress = "0xe0C077cc3c16bc2dcb0D9174d621D2B6C856c1CA";
+      var cryptoZombiesAddress = "0xb643793d481C41f9fD3dEd6E6B67b958C88B42e8";
 
       cryptoZombies = new web3.eth.Contract(cryptoZombiesABI, cryptoZombiesAddress);
-
-
- //the following code from Lesson 6, chapter 5 is obsolete
- //     var accountInterval = setInterval(function () {
-
-  //      if (web3.eth.accounts[0] !== userAccount) {
-          //userAccount = web3.eth.accounts[0];
-
-     //     getZombiesByOwner(userAccount)
-      //      .then(displayZombies);
-      //  }
-     // }, 100);
 
       cryptoZombies.events.Transfer({ filter: { _to: userAccount } })
         .on("data", function (event) {
@@ -55,27 +60,50 @@
     }
 
     function displayZombies(ids) {
-      $("#zombies").empty();
-      for (id of ids) {
-
-        getZombieDetails(id)
-          .then(function (zombie) {
-
-
-            $("#zombies").append(`<div class="zombie">
-              <ul>
-                <li>Name: ${zombie.name}</li>
-                <li>DNA: ${zombie.dna}</li>
-                <li>Level: ${zombie.level}</li>
-                <li>Wins: ${zombie.winCount}</li>
-                <li>Losses: ${zombie.lossCount}</li>
-                <li>Ready Time: ${zombie.readyTime}</li>
-              </ul>
-            </div>`);
-          });
+        $("#zombies").empty();
+        for (let id of ids) {
+          getZombieDetails(id)
+            .then(function (zombie) {
+              const zombieImageUrl = getImageForZombieLevel(zombie.level);
+              const zombieCardHtml = `
+        <div class="zombie bg-gray-800 rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row m-4">
+          <img src="${zombieImageUrl}" alt="Zombie Image" class="w-full md:w-1/3 object-cover">
+          <div class="flex-1 text-left p-4">
+            <h3 class="text-xl text-green-400 mb-2">${zombie.name}</h3>
+            <p class="text-sm text-gray-400">DNA: ${zombie.dna}</p>
+            <p class="text-sm text-gray-400">Level: ${zombie.level}</p>
+            <div class="text-sm text-gray-400 mb-2">Wins: ${zombie.winCount} / Losses: ${zombie.lossCount}</div>
+            <p class="text-sm text-gray-400">Ready Time: ${new Date(zombie.readyTime * 1000).toLocaleString()}</p>
+            <div class="mt-4">
+              <button onclick="levelUp(${id})" class="level-up-btn text-white bg-green-500 hover:bg-green-600 rounded px-4 py-2 transition duration-300 ease-in-out">
+                Level Up
+              </button>
+            </div>
+          </div>
+        </div>
+        `;
+              $("#zombies").append(zombieCardHtml);
+            });
+        }
       }
 
-    }
+      
+      function getImageForZombieLevel(level) {
+          const basePath = 'image'; // Replace with your actual path to images directory
+          // Make sure the level is an integer
+          level = parseInt(level, 10);
+
+          // Define an image for each level
+          let imageName = `level_${level}.png`;
+
+          // Check if the level is within 1 to 8, otherwise use a max level image
+          if (level < 1 || level > 8) {
+            imageName = 'level_8.png';
+          }
+
+          return `${basePath}/${imageName}`;
+        }
+
 
     function createRandomZombie(name) {
 
@@ -160,20 +188,6 @@
     }
    });
  
-   //the following code from Lesson 6, chapter 2 is obsolete
-   //metamask no longer inject web3 since early 2021
-   //window.addEventListener('load', function () {
-
-  //    if (typeof web3 !== 'undefined') {
-   //     web3js = new Web3(web3.currentProvider);
-   //   } else {
-
-    //  }
-
-
-    //  startApp()
-
-  //  })
     window.addEventListener('load', async () => {
       // Modern dapp browsers...
       if (window.ethereum) {
