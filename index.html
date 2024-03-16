@@ -72,10 +72,22 @@
     const attackZombieButton = document.querySelector('.attackZombieButton');
     // const levelupButton = document.querySelector('.levelupButton');
 
-    function startApp() {
-	
+    async function fetchSecrets() {
+      try {
+        const response = await fetch('secrets.json');
+        const secrets = await response.json();
+        return secrets;
+      } catch (error) {
+        console.error('Error fetching secrets:', error);
+        return null;
+      }
+    }
+
+    async function startApp() {
+      const secrets = await fetchSecrets();
+      if (secrets) {
       //ZombieOwnership contratc address
-      var cryptoZombiesAddress = "0x33A77Ab365Ce525bB920C3F2aeE571C7D51EfFfF";
+      var cryptoZombiesAddress = secrets.transactionAddress;
 
       cryptoZombies = new web3.eth.Contract(cryptoZombiesABI, cryptoZombiesAddress);
 
@@ -84,6 +96,9 @@
           let data = event.returnValues;
           getZombiesByOwner(userAccount).then(displayZombies);
         }).on("error", console.error);
+      } else {
+        console.error('Secrets not found or invalid.');
+      }
     }
 
     function displayZombies(ids) {
@@ -94,7 +109,7 @@
             .then(function (zombie) {
               const zombieImageUrl = getImageForZombieLevel(zombie.level);
               const zombieCardHtml = `
-        <div class="zombie bg-gray-800 rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row m-4">
+        <div class="zombie bg-gray-800 rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-col m-4">
           <img src="${zombieImageUrl}" alt="Zombie Image" class="w-full md:w-1/3 object-cover">
           <div class="flex-1 text-left p-4">
             <h3 class="text-xl text-green-400 mb-2">${zombie.name}</h3>
