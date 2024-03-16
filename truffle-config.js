@@ -18,9 +18,14 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-//
-// const fs = require('fs');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+
+const fs = require('fs');
+let rawData = fs.readFileSync("secrets.json");
+let secrets = JSON.parse(rawData);
+const passPhrase = secrets["passphrase"];
+const apiKey = secrets["apikey"];
+
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
 module.exports = {
@@ -41,11 +46,24 @@ module.exports = {
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
     //
-     development: {
+     development: {   
       host: "127.0.0.1",     // Localhost (default: none)
      port: 7545,            // Standard Ethereum port (default: none)
      network_id: "1337",       // Any network (default: none)
      },
+     sepolia: {
+      provider: () => new HDWalletProvider({
+      mnemonic: {
+      phrase: passphrase      },
+      providerOrUrl: apiKey
+      }),
+      network_id: 11155111, // Sepolia's network ID
+      gas: 4000000, // Adjust the gas limit as per your requirements
+      gasPrice: 10000000000, // Set the gas price to an appropriate value
+      confirmations: 2, // Set the number of confirmations needed for a transaction
+      timeoutBlocks: 5000, // Set the timeout for transactions
+      skipDryRun: true // Skip the dry run option
+     }
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port
