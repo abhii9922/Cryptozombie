@@ -24,6 +24,9 @@
       <button
         class="createzombieButton bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Create
         Zombie</button>
+      <button
+        class="attackZombieButton bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Attack
+        Zombie</button>
     </div>
 
     <!-- Zombie Cards Container -->
@@ -66,12 +69,13 @@
     var userAccount;
     const showZombieButton = document.querySelector('.showZombieButton');
     const createzombieButton = document.querySelector('.createzombieButton');
+    const attackZombieButton = document.querySelector('.attackZombieButton');
     // const levelupButton = document.querySelector('.levelupButton');
 
     function startApp() {
 	
       //ZombieOwnership contratc address
-      var cryptoZombiesAddress = "0xb643793d481C41f9fD3dEd6E6B67b958C88B42e8";
+      var cryptoZombiesAddress = "0x33A77Ab365Ce525bB920C3F2aeE571C7D51EfFfF";
 
       cryptoZombies = new web3.eth.Contract(cryptoZombiesABI, cryptoZombiesAddress);
 
@@ -85,6 +89,7 @@
     function displayZombies(ids) {
         $("#zombies").empty();
         for (let id of ids) {
+          console.log("Zombie ID:", id);
           getZombieDetails(id)
             .then(function (zombie) {
               const zombieImageUrl = getImageForZombieLevel(zombie.level);
@@ -100,6 +105,9 @@
             <div class="mt-4">
               <button onclick="levelUp(${id})" class="level-up-btn text-white bg-green-500 hover:bg-green-600 rounded px-4 py-2 transition duration-300 ease-in-out">
                 Level Up
+              </button>
+              <button onclick="levelDown(${id})" class="level-down-btn text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 transition duration-300 ease-in-out">
+                Level Down
               </button>
             </div>
           </div>
@@ -139,6 +147,8 @@
     function createRandomZombie(name) {
       $("#txStatus").text("Creating new zombie on the blockchain. This may take a while...");
 
+      console.log(cryptoZombies.methods);
+
       return cryptoZombies.methods.createRandomZombie(name)
         .send({ from: userAccount })
         .on("receipt", function (receipt) {
@@ -151,6 +161,7 @@
 
           $("#txStatus").text(error);
         });
+
     }
 
     function feedOnKitty(zombieId, kittyId) {
@@ -177,6 +188,38 @@
             showToast("Error leveling up zombie.");
           });
       }
+
+      function levelDown(zombieId) {
+        showToast("Leveling down your zombie...");
+        return cryptoZombies.methods.levelDown(zombieId)
+          .send({ from: userAccount, value: web3.utils.toWei("0.001", "ether") })
+          .on("receipt", function (receipt) {
+            showToast("Zombie successfully leveled down.");
+          })
+          .on("error", function (error) {
+            showToast("Error leveling down zombie.");
+          });
+      }
+
+      async function attackZombie(zombieId, targetId) {
+        console.log([zombieId, targetId])
+        // Check if both zombieId and targetId are valid
+        if (zombieId === targetId) {
+          showToast("Error: Zombie cannot attack itself.");
+          return;
+        }
+
+        showToast("Attacking the target zombie...");
+        return cryptoZombies.methods.attack(zombieId, targetId)
+          .send({ from: userAccount })
+          .on("receipt", function (receipt) {
+            showToast("Attack successful! Your zombie defeated the target.");
+          })
+          .on("error", function (error) {
+            showToast("Error while attacking. Your zombie couldn't defeat the target.");
+          });
+      }
+
 
     function getZombieDetails(id) {
       return cryptoZombies.methods.zombies(id).call()
@@ -252,6 +295,10 @@
             .then(displayZombies);
 
     });
+
+      attackZombieButton.addEventListener('click', () => {
+        attackZombie(0, 1);
+      })
 
   </script>
 </body>
