@@ -87,11 +87,7 @@
       const secrets = await fetchSecrets();
       if (secrets) {
       //ZombieOwnership contratc address
-<<<<<<< Updated upstream
       var cryptoZombiesAddress = secrets.transactionAddress;
-=======
-      var cryptoZombiesAddress = "0x3d30C6719914B95C7fA1d4c927A5445543AC3323";
->>>>>>> Stashed changes
 
       cryptoZombies = new web3.eth.Contract(cryptoZombiesABI, cryptoZombiesAddress);
 
@@ -128,13 +124,6 @@
               <button onclick="levelDown(${id})" class="level-down-btn text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 transition duration-300 ease-in-out">
                 Level Down
               </button>
-              <input type="text" id="zombieName${id}" placeholder="New Name" class="bg-gray-700 border border-gray-600 text-white px-4 py-2 mb-2 rounded">
-              <div class="flex items-center mb-2">
-                <button onclick="changeZombieName(${id})" class="change-name-btn text-white bg-blue-500 hover:bg-blue-600 rounded px-4 py-2 mr-2 transition duration-300 ease-in-out">
-                  Change Name
-                </button>
-                <span id="nameChangeStatus${id}" class="text-gray-400"></span>
-              </div>
             </div>
           </div>
         </div>
@@ -246,24 +235,6 @@
           });
       }
 
-        function changeZombieName(zombieId) {
-            const newName = document.getElementById(`zombieName${zombieId}`).value;
-            try {
-              showToast("Changing zombie name...");
-              cryptoZombies.methods.changeName(zombieId, newName)
-                .send({ from: userAccount })
-                .on("receipt", function (receipt) {
-                  showToast("Zombie name successfully changed.");
-                })
-                .on("error", function (error) {
-                  showToast("Error changing zombie name.");
-                });
-            } catch (error) {
-              console.error('Error changing zombie name:', error);
-              showToast("Error changing zombie name.");
-              throw error;
-            }
-          }
 
     function getZombieDetails(id) {
       return cryptoZombies.methods.zombies(id).call()
