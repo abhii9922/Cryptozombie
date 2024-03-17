@@ -1,3 +1,17 @@
+# Team BlockWizards
+
+1. Akash Butala 
+
+2. Abhishek Shinde
+
+3. Soham Kulkarni 
+
+4. Jeet Hirakani
+
+# Repo Link
+
+https://github.com/abhii9922/Cryptozombie
+
 # To run this application
 
 1. Install the dependencies using `npm install`
@@ -41,6 +55,8 @@
 6. Deployed the DApp to Sepolia.
    
 7. Added the leveldown functionality
+
+8. Can change the name of the Zombies
 
 # Instructions to deploy on Sepolia
 
