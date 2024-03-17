@@ -38,7 +38,9 @@
 
 5. Updated the starter code and made it dynamic.
 
-6. Deployed the testnet to Sepolia. 
+6. Deployed the DApp to Sepolia.
+   
+7. Added the leveldown functionality
 
 # Instructions to deploy on Sepolia
 
