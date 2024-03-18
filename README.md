@@ -77,3 +77,6 @@ https://github.com/abhii9922/Cryptozombie
 
 5. Run `npm start`
 
+# Additional Instructions
+
+1. Use `truffle migrate --reset` to redeploy on Ganache, and use `truffle migrate --reset --network sepolia` to redeploy on Sepolia
