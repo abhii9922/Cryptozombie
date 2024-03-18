@@ -74,7 +74,7 @@
 
     async function fetchSecrets() {
       try {
-        const response = await fetch('secrets.json');
+        const response = await fetch('key.json');
         const secrets = await response.json();
         return secrets;
       } catch (error) {

@@ -23,8 +23,8 @@ const HDWalletProvider = require('@truffle/hdwallet-provider');
 const fs = require('fs');
 let rawData = fs.readFileSync("secrets.json");
 let secrets = JSON.parse(rawData);
-const passPhrase = secrets["passphrase"];
-const apiKey = secrets["apikey"];
+const passphrase = secrets["passphrase"];
+const apiKey = secrets["apiKey"];
 
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
